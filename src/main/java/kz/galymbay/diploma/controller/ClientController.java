@@ -1,33 +1,43 @@
 package kz.galymbay.diploma.controller;
 
+import kz.galymbay.diploma.model.entity.Client;
 import kz.galymbay.diploma.model.entity.Clothes;
+import kz.galymbay.diploma.repository.ClientRepository;
+import kz.galymbay.diploma.service.ClientService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-//@Controller
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("/clients")
 public class ClientController {
+    private final ClientService clientService;
     @GetMapping
     public String getClients(Model model) {
-        model.addAttribute("shirtList", clothes);
-        return "index";
+        List<Client> clients = clientService.getClients();
+        model.addAttribute("clients", clients);
+        return "clients";
+    }
+
+    @PostMapping(path = "{id}/delete")
+    public String deleteClothes(@PathVariable Long id) {
+        clientService.deleteClothes(id);
+        return "redirect:/clients";
     }
 
     @PostMapping("/search")
     public String search(@RequestParam("search") String search, Model model) {
-        List<Clothes> result = new ArrayList<>();
-        for (Clothes clothe : clothes) {
-            if (clothe.getDescription().contains(search))
-                result.add(clothe);
-        }
+        List<Client> result = clientService.search(search);
 
         model.addAttribute("shirtList", result);
-        return "index";
+        return "clients";
     }
 }
+
+//@RestController
+

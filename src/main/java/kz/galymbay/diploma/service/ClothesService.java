@@ -1,12 +1,17 @@
 package kz.galymbay.diploma.service;
 
+//import kz.galymbay.diploma.model.entity.Clothes;
+//import kz.galymbay.diploma.repository.ClothesRepository;
 import kz.galymbay.diploma.model.entity.Clothes;
+//import kz.galymbay.diploma.repository.ClothesRepository;
 import kz.galymbay.diploma.repository.ClothesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
@@ -49,6 +54,7 @@ public class ClothesService {
         return "SUCCESS";
     }
 
+    @PostMapping
     public List<Clothes> search(String search) {
         List<Clothes> result = new ArrayList<>();
         List<Clothes> clothes = getClothes();

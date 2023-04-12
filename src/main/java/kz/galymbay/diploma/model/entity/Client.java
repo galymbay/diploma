@@ -54,13 +54,12 @@ public class Client {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public Client(String firstName, String lastName, String email, String phoneNumber, String password, String confirmPassword) {
+    public Client(String firstName, String lastName, String email, String phoneNumber, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.confirmPassword = confirmPassword;
         this.isBlock = true;
     }
 }

@@ -1,6 +1,7 @@
 package kz.galymbay.diploma.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Setter
 @Table(name = "clothes")
 @NoArgsConstructor
+@AllArgsConstructor
 public class Clothes {
     @Id
     @Column(name = "clothes_id")

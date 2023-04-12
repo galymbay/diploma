@@ -11,8 +11,8 @@
 
 <nav class="navbar navbar-expand-lg bg-light mb-5">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">3JUZ</a>
-        <img th:src="@{logo.png}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+        <a class="navbar-brand" href="/clothes">3JUZ</a>
+        <img th:src="@{/logo.png}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
                 aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -20,17 +20,17 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link active" aria-current="page" th:href="@{/clothes}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                    <a class="nav-link" th:href="@{/clients}">Users</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link disabled">Disabled</a>
+                    <a class="nav-link">About Us</a>
                 </li>
             </ul>
-            <form class="d-flex" role="search" th:action="@{/clothes}" method="post">
-                <input class="form-control me-2" type="text" name="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex" role="search" th:action="@{/clothes}" method="get">
+                <input class="form-control me-2" th:value="${search}" type="text" name="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit" value="Search">Search</button>
             </form>
         </div>
@@ -38,7 +38,44 @@
 </nav>
 
 <div class="container-lg">
-    
+    <button type="button" class="btn btn-outline-success container-lg mb-2" data-bs-toggle="modal" data-bs-target="#addNew">
+        ADD
+    </button>
+
+    <div class="modal fade" id="addNew" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">New Clothes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="clothes-form" th:action="@{/clothes/add}" th:object="${clothes}" method="post">
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Type</label>
+                            <input type="text" class="form-control" id="type" th:field="*{type}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="price" th:field="*{price}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" th:field="*{description}" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="url" class="form-label">Image URL</label>
+                            <input type="text" class="form-control" id="url" th:field="*{url}" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <div class="col mb-3" th:each="clothes: ${clothesList}">
@@ -48,6 +85,14 @@
                     <h5 class="card-title" th:text="${clothes.getId()}"></h5>
                     <h5 class="card-title" th:text="${clothes.price}"></h5>
                     <p class="card-text" th:text="${clothes.description}"></p>
+                    <form th:action="@{/clothes/{id}/delete (id=${clothes.getId()})}" method="post">
+                        <button type="submit" onClick="return confirm('sure?')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

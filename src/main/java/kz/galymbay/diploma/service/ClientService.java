@@ -6,13 +6,9 @@ import kz.galymbay.diploma.repository.ClientRepository;
 import kz.galymbay.diploma.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -20,11 +16,11 @@ import java.util.UUID;
 public class ClientService {
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
     public Client saveClient(Client client) {
-        client.setPassword(passwordEncoder.encode(client.getPassword()));
+//        client.setPassword(passwordEncoder.encode(client.getPassword()));
         Role role = roleRepository.findByName("ROLE_CLIENT");
 
         Set<Role> roles = new HashSet<Role>() {{
@@ -50,7 +46,8 @@ public class ClientService {
         updatedUser.setLastName(client.getLastName());
         updatedUser.setEmail(client.getEmail());
         updatedUser.setPhoneNumber(client.getPhoneNumber());
-        updatedUser.setPassword(passwordEncoder.encode(client.getPassword()));
+//        updatedUser.setPassword(passwordEncoder.encode(client.getPassword()));
+        updatedUser.setPassword(client.getPassword());
         updatedUser.setBlock(client.isBlock());
 
         clientRepository.save(client);
@@ -65,5 +62,24 @@ public class ClientService {
             return "SUCCESS";
         }
         return "UserNotFound";
+    }
+
+    public List<Client> getClients() {
+        return clientRepository.findAll();
+    }
+
+    public void deleteClothes(Long id) {
+        clientRepository.deleteById(id);
+    }
+
+    public List<Client> search(String search) {
+        List<Client> result = new ArrayList<>();
+        List<Client> clients = getClients();
+        for (Client client : clients) {
+            if (client.getFirstName().contains(search) || client.getLastName().contains(search) || client.getEmail().contains(search) || String.valueOf(client.getId()).contains(search))
+                result.add(client);
+        }
+
+        return clients;
     }
 }

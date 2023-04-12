@@ -21,7 +21,7 @@ public class OrderService {
     }
 
     public Order updateOrder(Long id, Order order) {
-        Order currentClothes = orderRepository.getReferenceById(id);
+        Order currentClothes = orderRepository.findById(id).get();
 
         return addOrder(order);
     }
