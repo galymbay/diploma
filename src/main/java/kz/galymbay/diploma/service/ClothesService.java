@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
@@ -67,5 +66,10 @@ public class ClothesService {
         }
 
         return result;
+    }
+
+    public Clothes findById(Long id) {
+        Clothes byId = clothesRepository.findById(id).get();
+        return byId;
     }
 }

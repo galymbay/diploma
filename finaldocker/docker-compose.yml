@@ -1,0 +1,103 @@
+version: "3"
+
+services:
+#  db:
+#    image: postgres
+#    restart: always
+#    environment:
+#      POSTGRES_USER: ramazan
+#      POSTGRES_PASSWORD: ramazan
+#      POSTGRES_DB: diploma
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - elk
+#
+#  keycloak:
+#    image: jboss/keycloak
+#    restart: always
+#    environment:
+#      DB_VENDOR: POSTGRES
+#      DB_ADDR: db
+#      DB_DATABASE: diploma
+#      DB_USER: ramazan
+#      DB_PASSWORD: ramazan
+#      KEYCLOAK_USER: admin
+#      KEYCLOAK_PASSWORD: admin
+#    ports:
+#      - "8080:8080"
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_INSTALL_PLUGINS: grafana-clock-panel
+    ports:
+      - "3000:3000"
+    networks:
+      - elk
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - elk
+
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.1
+#    container_name: elasticsearch
+#    environment:
+#      - node.name=elasticsearch
+#      - discovery.seed_hosts=elasticsearch
+#      - cluster.initial_master_nodes=elasticsearch
+#      - bootstrap.memory_lock=true
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    ports:
+#      - "9200:9200"
+#    networks:
+#      - elk
+#
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:7.13.1
+#    container_name: logstash
+#    environment:
+#      - pipeline.batch.size=1
+#      - pipeline.workers=1
+#      - pipeline.batch.delay=50
+#    volumes:
+#      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+#    ports:
+#      - "5000:5000"
+#      - "5044:5044"
+#      - "9600:9600"
+#    networks:
+#      - elk
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:7.13.3
+#    container_name: kibana
+#    ports:
+#      - 5601:5601
+#    environment:
+#      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+#    networks:
+#      - elk
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  elk:
+    driver: bridge

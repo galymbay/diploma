@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+#  postgres:
+#    container_name: postgres-keycloak
+#    image: library/postgres
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: keycloak_db
+#    ports:
+#      - "5432:5432"
+#    restart: unless-stopped
+
+  keycloak:
+    image: jboss/keycloak
+    container_name: keycloak
+    environment:
+#      DB_URL: jdbc:postgresql://localhost:5432/diploma
+      DB_VENDOR: POSTGRES
+      DB_ADDR: jdbc:postgresql://localhost:5432/diploma
+      DB_DATABASE: diploma
+      DB_USER: ${POSTGRES_USER:-ramazan}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-ramazan}
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+    ports:
+      - "8484:8080"
+#    depends_on:
+#      - postgres
+#    links:
+#      - "postgres:postgres"

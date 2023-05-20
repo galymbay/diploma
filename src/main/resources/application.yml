@@ -1,0 +1,53 @@
+jwt.secret: 3juzbrand
+#server:
+#  port: 8084
+#
+#keycloak:
+#  auth-server-url: http://localhost:8080/auth
+#  realm: 3juz
+#  resource: ramazan
+#  public-client: true
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: *
+#    health:
+#      show-details: always
+#    metrics:
+#      enable: true
+#      prometheus:
+#        enable: true
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+  datasource:
+    url: jdbc:postgresql://localhost:5432/diploma
+    username: diex
+    password: diex
+    driver-class-name: org.postgresql.Driver
+    platform: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          keycloak:
+#            client-id: ramazan
+#            authorization-grant-type: authorization_code
+#            scope:
+#              - openid
+#        provider:
+#          keycloak:
+#            issuer-uri: http://localhost:8080/realms/3juz
+#            jwk-set-uri: http://localhost:8080/realms/3juz/protocol/openid-connect/certs
+#            user-name-attribute: preferred_username
+#      resourceserver:
+#        jwt:
+#          issuer-uri: http://localhost:8080/realms/3juz

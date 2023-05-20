@@ -42,8 +42,12 @@ public class Client {
 
     @OneToMany(mappedBy = "client")
     private Set<Order> orders;
+
+    @JsonIgnore
     @Column(name = "is_block")
-    private boolean isBlock = true;
+    private boolean isBlock;
+
+    @JsonIgnore
     @Column(name = "activation_code")
     private String activationCode;
 

@@ -1,11 +1,16 @@
 package kz.galymbay.diploma.service;
 
+import kz.galymbay.diploma.exception.ServiceFaultException;
 import kz.galymbay.diploma.model.entity.Client;
 import kz.galymbay.diploma.model.entity.Role;
 import kz.galymbay.diploma.repository.ClientRepository;
 import kz.galymbay.diploma.repository.RoleRepository;
+import kz.galymbay.diploma.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -16,7 +21,9 @@ import java.util.*;
 public class ClientService {
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
-//    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    private final JWTUtil jwtUtil;
 
 
     public Client saveClient(Client client) {
@@ -81,5 +88,17 @@ public class ClientService {
         }
 
         return clients;
+    }
+
+    public String registration(Client client) {
+        client.setPassword(passwordEncoder.encode(client.getPassword()));
+        Role role_client = roleRepository.findByRoleName("ROLE_CLIENT");
+        if (role_client == null)
+            throw new ServiceFaultException("Client role not found", HttpStatus.BAD_REQUEST);
+        client.getRoles().add(role_client);
+        clientRepository.save(client);
+        String token = jwtUtil.generateToken(client.getPhoneNumber());
+
+        return token;
     }
 }

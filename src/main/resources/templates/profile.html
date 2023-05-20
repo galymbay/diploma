@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-light mb-5">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/clothes">3JUZ</a>
+        <img th:src="@{/logo.png}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" th:href="@{/clothes}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/clients}">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">About Us</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <h1 class="text-center">User Profile</h1>
+            <hr>
+            <div class="card">
+                <div class="card-header text-center">
+                    <img th:src="@{${user.profileImageUrl}}" alt="Profile Picture" class="img-fluid rounded-circle">
+                    <h5 class="card-title mt-2" th:text="${user.firstName} + ' ' + ${user.lastName}"></h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Email:</strong> <span th:text="${user.email}"></span></li>
+                    <li class="list-group-item"><strong>Phone:</strong> <span th:text="${user.phone}"></span></li>
+                    <li class="list-group-item"><strong>Address:</strong> <span th:text="${user.address}"></span></li>
+                    <li class="list-group-item"><strong>City:</strong> <span th:text="${user.city}"></span></li>
+                    <li class="list-group-item"><strong>Country:</strong> <span th:text="${user.country}"></span></li>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit</button>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <h1 class="text-center">User Profile</h1>
+            <hr>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">About Me</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text" th:text="${user.aboutMe}"></p>
+                </div>
+            </div>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Interests</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-inline" th:each="interest : ${user.interests}">
+                        <li class="list-inline-item"><span class="badge badge-pill badge-info" th:text="${interest}"></span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit profile form -->
+                <form th:object="${user}" th:action="@{/editProfile}" method="post">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" th:value="${user.name}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" th:value="${user.email}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<body/>
+<html/>

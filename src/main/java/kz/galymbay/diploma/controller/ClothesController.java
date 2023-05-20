@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/clothes")
+@RequestMapping("/api/clothes")
 @RequiredArgsConstructor
 public class ClothesController {
     private final ClothesService clothesService;
@@ -28,6 +28,13 @@ public class ClothesController {
             model.addAttribute("clothes", new Clothes());
         }
 //        return ResponseEntity.ok(clothesService.getClothes());
+        return "index";
+    }
+
+    @GetMapping("/{id}")
+    public String getClothesById(@PathVariable Long id, Model model) {
+        Clothes clothes = clothesService.findById(id);
+        model.addAttribute("updateClothes", clothes);
         return "index";
     }
 
