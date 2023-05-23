@@ -7,6 +7,36 @@
           integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 </head>
 <body>
+<header class="p-3 mb-3 border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a class="navbar-brand" th:href="@{/clothes}">3JUZ</a>
+
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a class="nav-link px-2 link-dark" aria-current="page" th:href="@{/clothes}">Home</a></li>
+                <li><a class="nav-link px-2 link-dark active" th:href="@{/clients}">Users</a></li>
+                <li><a class="nav-link px-2 link-dark">About Us</a></li>
+            </ul>
+
+            <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+                <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+            </form>
+
+            <div class="dropdown text-end">
+                <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                </a>
+                <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+                    <li><a class="dropdown-item" href="#">New project...</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
 <nav class="navbar navbar-expand-lg bg-light mb-5">
     <div class="container-fluid">
         <a class="navbar-brand" href="/clothes">3JUZ</a>
@@ -37,70 +67,117 @@
             <hr>
             <div class="card">
                 <div class="card-header text-center">
-                    <img th:src="@{${user.profileImageUrl}}" alt="Profile Picture" class="img-fluid rounded-circle">
-                    <h5 class="card-title mt-2" th:text="${user.firstName} + ' ' + ${user.lastName}"></h5>
+                    <!--                    <img th:src="@{${user.profileImageUrl}}" alt="Profile Picture" class="img-fluid rounded-circle">-->
+                    <h5 class="card-title mt-2" th:text="${client.firstName} + ' ' + ${client.lastName}"></h5>
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Email:</strong> <span th:text="${user.email}"></span></li>
-                    <li class="list-group-item"><strong>Phone:</strong> <span th:text="${user.phone}"></span></li>
-                    <li class="list-group-item"><strong>Address:</strong> <span th:text="${user.address}"></span></li>
-                    <li class="list-group-item"><strong>City:</strong> <span th:text="${user.city}"></span></li>
-                    <li class="list-group-item"><strong>Country:</strong> <span th:text="${user.country}"></span></li>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editProfileModal">Edit</button>
+                    <li class="list-group-item"><strong>Email:</strong> <span th:text="${client.email}"></span></li>
+                    <li class="list-group-item"><strong>Phone:</strong> <span th:text="${client.phoneNumber}"></span>
+                    </li>
+                    <!--                    <li class="list-group-item"><strong>Address:</strong> <span th:text="${client.address}"></span></li>-->
+                    <!--                    <li class="list-group-item"><strong>City:</strong> <span th:text="${client.city}"></span></li>-->
+                    <!--                    <li class="list-group-item"><strong>Country:</strong> <span th:text="${client.country}"></span></li>-->
+                    <button type="button" class="btn btn-outline-success container-lg m-auto" data-bs-toggle="modal"
+                            data-bs-target="#editProfileModal">
+                        Edit
+                    </button>
                 </ul>
+
+                <!-- Edit profile Modal -->
+                <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
+                     aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Edit profile form -->
+                                <form th:object="${client}" th:action="@{update}" method="post">
+                                    <div class="form-group">
+                                        <label for="name">Name</label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                               th:text="${client.firstName}" th:value="${client.firstName}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email"
+                                               th:text="${client.email}" th:value="${client.email}">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
         <div class="col-md-9">
             <h1 class="text-center">User Profile</h1>
             <hr>
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">About Me</h5>
+                    <h5 class="card-title">Favourites</h5>
                 </div>
                 <div class="card-body">
-                    <p class="card-text" th:text="${user.aboutMe}"></p>
+                    <p class="card-text" th:text="${client.getLastName()}"></p>
                 </div>
             </div>
             <div class="card mt-4">
                 <div class="card-header">
-                    <h5 class="card-title">Interests</h5>
+                    <h5 class="card-title">Orders</h5>
                 </div>
                 <div class="card-body">
-                    <ul class="list-inline" th:each="interest : ${user.interests}">
-                        <li class="list-inline-item"><span class="badge badge-pill badge-info" th:text="${interest}"></span></li>
+                    <ul class="list-inline" th:each="order : ${client.getOrders()}">
+                        <li class="list-inline-item"><span class="badge badge-pill badge-info"
+                                                           th:text="${order}"></span></li>
                     </ul>
                 </div>
             </div>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Basket</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="col mb-3" th:each="clothes : ${client.getBasket().getClothes()}">
+                        <li class="list-inline-item">
+
+                            <div class="row row-cols-1 row-cols-md-3 g-4">
+                                <div class="col mb-3">
+                                    <div class="card">
+                                        <img th:src="${clothes.getUrl()}" class="card-img-top img-fluid">
+                                        <div class="card-body">
+                                            <h5 class="card-title" th:text="${clothes.getPrice()} + ' T'"></h5>
+                                            <p class="card-text" th:text="${clothes.getDescription()}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </li>
+                    </ul>
+                </div>
+                <!--                <div class="row row-cols-1 row-cols-md-3 g-4">-->
+                <!--                    <div class="col mb-3" th:each="clothes: ${clothesList}">-->
+                <!--                        <div class="card text-center">-->
+                <!--                            <img th:src="${clothes.getUrl()}" class="card-img-top img-fluid">-->
+                <!--                            <div class="card-body">-->
+                <!--                                <h5 class="card-title" th:text="${clothes.getPrice()} + ' T'"></h5>-->
+                <!--                                <p class="card-text" th:text="${clothes.getDescription()}"></p>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
         </div>
     </div>
+
 </div>
 
-<!-- Edit profile Modal -->
-<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Edit profile form -->
-                <form th:object="${user}" th:action="@{/editProfile}" method="post">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" th:value="${user.name}">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" th:value="${user.email}">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+
 <body/>
 <html/>

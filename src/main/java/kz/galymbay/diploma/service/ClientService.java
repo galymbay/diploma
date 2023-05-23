@@ -1,11 +1,12 @@
 package kz.galymbay.diploma.service;
 
 import kz.galymbay.diploma.exception.ServiceFaultException;
+import kz.galymbay.diploma.model.entity.Basket;
 import kz.galymbay.diploma.model.entity.Client;
 import kz.galymbay.diploma.model.entity.Role;
+import kz.galymbay.diploma.repository.BasketRepository;
 import kz.galymbay.diploma.repository.ClientRepository;
 import kz.galymbay.diploma.repository.RoleRepository;
-import kz.galymbay.diploma.utils.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,14 +22,19 @@ import java.util.*;
 public class ClientService {
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
+    private final BasketRepository basketRepository;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    private final JWTUtil jwtUtil;
 
 
     public Client saveClient(Client client) {
-//        client.setPassword(passwordEncoder.encode(client.getPassword()));
-        Role role = roleRepository.findByName("ROLE_CLIENT");
+        client.setPassword(passwordEncoder.encode(client.getPassword()));
+        Role role = roleRepository.findByRoleName("ROLE_CLIENT");
+        if (Objects.isNull(client.getBasket())) {
+            Basket basket = new Basket();
+            basket.setClient(client);
+            basketRepository.save(basket);
+            client.setBasket(basket);
+        }
 
         Set<Role> roles = new HashSet<Role>() {{
             add(role);
@@ -46,18 +52,18 @@ public class ClientService {
         return client;
     }
 
-    public Client updateClient(Client client, Long id) {
-        Client updatedUser = clientRepository.findClientById(id);
+    public Client updateClient(Client client) {
+        Client updatedUser = clientRepository.findClientById(client.getId());
 
         updatedUser.setFirstName(client.getFirstName());
         updatedUser.setLastName(client.getLastName());
         updatedUser.setEmail(client.getEmail());
         updatedUser.setPhoneNumber(client.getPhoneNumber());
-//        updatedUser.setPassword(passwordEncoder.encode(client.getPassword()));
+        updatedUser.setPassword(passwordEncoder.encode(client.getPassword()));
         updatedUser.setPassword(client.getPassword());
         updatedUser.setBlock(client.isBlock());
 
-        clientRepository.save(client);
+        clientRepository.save(updatedUser);
 
         return updatedUser;
     }
@@ -90,15 +96,27 @@ public class ClientService {
         return clients;
     }
 
-    public String registration(Client client) {
+    public Client registration(Client client) {
         client.setPassword(passwordEncoder.encode(client.getPassword()));
         Role role_client = roleRepository.findByRoleName("ROLE_CLIENT");
         if (role_client == null)
             throw new ServiceFaultException("Client role not found", HttpStatus.BAD_REQUEST);
+        Basket basket = new Basket();
+        basket.setClient(client);
+        client.setBasket(basket);
         client.getRoles().add(role_client);
+        basketRepository.save(basket);
         clientRepository.save(client);
-        String token = jwtUtil.generateToken(client.getPhoneNumber());
 
-        return token;
+        return client;
+    }
+
+    public boolean login(Client client) {
+        Client currentClient = clientRepository.findByEmail(client.getEmail());
+        if (Objects.nonNull(currentClient)) {
+            return passwordEncoder.encode(client.getPassword()).equals(currentClient.getPassword());
+        }
+
+        return false;
     }
 }

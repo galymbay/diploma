@@ -20,31 +20,42 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final MyUserDetailsService myUserDetailsService;
-    private final JWTFilter jwtFilter;
 
+    //    private final JWTFilter jwtFilter;
+//
     @Autowired
-    public SecurityConfig(@Qualifier("userDetailsService") MyUserDetailsService myUserDetailsService, JWTFilter jwtFilter) {
+    public SecurityConfig(@Qualifier("userDetailsService") MyUserDetailsService myUserDetailsService) {
         this.myUserDetailsService = myUserDetailsService;
-        this.jwtFilter = jwtFilter;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf()
-                .disable()
                 .authorizeRequests()
-                .anyRequest().permitAll()
-//                .antMatchers("/registration", "/login", "/swagger-ui/#/*").permitAll()
-//                .antMatchers("/client").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
-//                .antMatchers("/loan").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
-//                .antMatchers("/loan/*").hasAuthority("ROLE_ADMIN")
-//                .anyRequest().authenticated()
+                .antMatchers(
+                        "/registration",
+                        "/**/*.css",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.js",
+                        "/login",
+                        "/swagger-ui/#/*"
+                ).permitAll()
+                .antMatchers("/clients").hasAuthority("ROLE_ADMIN")
+                .antMatchers("/clothes/**").hasAuthority("ROLE_ADMIN")
+                .anyRequest().authenticated()
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+                .formLogin()
+                .loginPage("/login")
+                .defaultSuccessUrl("/clothes")
+                .permitAll()
+                .and()
+                .logout()
+                .logoutSuccessUrl("/clothes")
+                .permitAll();
     }
 
     @Override
@@ -66,9 +77,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder(12);
     }
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+//    @Bean
+//    @Override
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
 }

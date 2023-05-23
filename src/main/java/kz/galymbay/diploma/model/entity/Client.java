@@ -1,10 +1,7 @@
 package kz.galymbay.diploma.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -12,6 +9,7 @@ import java.util.Set;
 
 @Data
 @Entity
+@Builder
 @ToString
 @Table(name = "client")
 @NoArgsConstructor
@@ -21,6 +19,9 @@ public class Client {
     @Column(name = "client_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "client_img")
+    private String image;
 
     @Column(name = "client_firstname")
     private String firstName;
@@ -58,12 +59,19 @@ public class Client {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    private Basket basket;
+
     public Client(String firstName, String lastName, String email, String phoneNumber, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.isBlock = true;
+    }
+
+    public Client(String email, String password) {
+        this.email = email;
+        this.password = password;
     }
 }

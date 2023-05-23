@@ -33,6 +33,10 @@ public class Clothes {
     @ManyToMany(mappedBy = "clothes")
     private Set<Order> orders = new HashSet<>();
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "clothes")
+    private Set<Basket> baskets;
+
     public Clothes(String type, int price, String description) {
         this.type = type;
         this.price = price;
