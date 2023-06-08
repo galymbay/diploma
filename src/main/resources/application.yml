@@ -21,6 +21,8 @@ jwt.secret: 3juzbrand
 #        enable: true
 
 spring:
+  application:
+    name: 3JUZ-Brand
   servlet:
     multipart:
       max-file-size: 5MB
@@ -34,6 +36,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 3juztestmail@gmail.com
+    password: hfetklfymfkzomam
+#    properties.mail.smtp:
+#      auth: true
+#      starttls.enabled: true
+#      starttls.required: true
+#      html: true
 #  security:
 #    oauth2:
 #      client:
@@ -51,3 +63,9 @@ spring:
 #      resourceserver:
 #        jwt:
 #          issuer-uri: http://localhost:8080/realms/3juz
+#          jwk-set-uri: http://localhost:8080/realms/3juz/protocol/openid-connect/certs
+#server:
+#  port: 8084
+#logging:
+#  file:
+#    name: /Users/ramazan/Desktop/diploma/elk-stack.log

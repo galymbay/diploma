@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Objects;
+
 @Controller
 @RequestMapping("/profile")
 @RequiredArgsConstructor
@@ -20,6 +22,8 @@ public class ProfileController {
     public String getProfile(@AuthenticationPrincipal UserPrincipal userPrincipal, Model model){
         Client client = clientService.findById(userPrincipal.getClient().getId());
         model.addAttribute("client", client);
+        if (Objects.nonNull(userPrincipal.getClient().getBasket()))
+            model.addAttribute("basket", userPrincipal.getClient().getBasket());
 
         return "profile";
     }

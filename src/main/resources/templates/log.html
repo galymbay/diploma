@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Title</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+<body class="bg-gradient-primary">
+
+<header class="p-3 mb-3 border-bottom">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a class="navbar-brand me-3" th:href="@{/clothes}">3JUZ</a>
+      <img src="logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-3">
+
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a class="nav-link px-2 link-dark" aria-current="page" th:href="@{/clothes}">Home</a></li>
+        <li><a sec:authorize="hasAuthority('ROLE_ADMIN')" class="nav-link px-2 link-dark" th:href="@{/clients}">Users</a>
+        </li>
+        <li><a class="nav-link px-2 link-dark">About Us</a></li>
+      </ul>
+
+      <a th:href="@{/basket}">
+        <button sec:authorize="isAuthenticated()" type="button"
+                class="btn btn-outline-success position-relative me-4">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart2"
+               viewBox="0 0 16 16">
+            <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+          </svg>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+                th:text="${basket.getClothes().size()}">
+                </span>
+        </button>
+      </a>
+
+      <form class=" d-flex col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" th:action="@{/clothes}"
+            method="post">
+        <input type="text" class="form-control me-2" name="search" th:value="${search}" placeholder="Search..."
+               aria-label="Search">
+        <button class="btn btn-outline-secondary" type="submit" value="Search">Search</button>
+      </form>
+
+      <a sec:authorize="isAnonymous()" type="button" th:href="@{/login}"
+         class="btn btn-outline-success position-relative me-4">
+        Login
+      </a>
+
+      <div class="dropdown text-end">
+        <a th:href="@{/clothes}" sec:authorize="isAuthenticated()"
+           class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
+           data-bs-toggle="dropdown" th:text="${client.firstName}">
+        </a>
+        <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+          <li><a class="dropdown-item" th:href="@{/profile}">Profile</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item" th:href="@{/logout}">Sign out</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container-lg">
+  <table class="table caption-top text-center">
+    <caption>List of clients</caption>
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Time</th>
+      <th scope="col">Level</th>
+      <th scope="col">Name</th>
+      <th scope="col">Message</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="log, index : ${logs}">
+      <th scope="row" th:text="${index.index + 1}"></th>
+      <td th:text="${log.timestamp}"></td>
+      <td th:text="${log.level}"></td>
+      <td th:text="${log.logger_name}"></td>
+<!--      <td th:text="${log.message}"></td>-->
+      <td>
+        <button type="button" class="btn btn-success" data-bs-toggle="popover" data-bs-title="Popover title" th:data-bs-content="${log.message}">Log</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
+        integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
+        crossorigin="anonymous"></script>
+<script>
+  const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+  const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+</script>
+
+</body>
+</html>

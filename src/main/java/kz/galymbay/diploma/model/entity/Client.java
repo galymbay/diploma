@@ -19,24 +19,20 @@ public class Client {
     @Column(name = "client_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "client_img")
-    private String image;
-
     @Column(name = "client_firstname")
     private String firstName;
-
     @Column(name = "client_lastname")
     private String lastName;
-
     @Column(name = "client_email")
     private String email;
-
     @Column(name = "client_phone")
     private String phoneNumber;
-
     @Column(name = "client_password")
     private String password;
+    @Column(name = "client_city")
+    private String city;
+    @Column(name = "client_country")
+    private String country;
 
     @Transient
     private String confirmPassword;

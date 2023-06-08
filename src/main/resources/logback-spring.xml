@@ -1,29 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>localhost:5000</destination>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
             <providers>
-                <mdc/>
-                <context/>
-                <logLevel/>
-                <loggerName/>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
                 <pattern>
-                    <pattern>
-                        {
-                        "app": "test-log"
-                        }
-                    </pattern>
+                    <pattern>{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}","level":"%level","logger":"%logger","message":"%message"}</pattern>
                 </pattern>
-                <threadName/>
-                <message/>
-                <logstashMarkers/>
-                <stackTrace/>
             </providers>
         </encoder>
     </appender>
-    <root level="info">
-        <appender-ref ref="logstash"/>
+
+    <root level="INFO">
+        <appender-ref ref="console" />
     </root>
 </configuration>

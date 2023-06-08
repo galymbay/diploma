@@ -23,6 +23,7 @@ public class ClientService {
     private final ClientRepository clientRepository;
     private final RoleRepository roleRepository;
     private final BasketRepository basketRepository;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
@@ -52,16 +53,16 @@ public class ClientService {
         return client;
     }
 
-    public Client updateClient(Client client) {
-        Client updatedUser = clientRepository.findClientById(client.getId());
+    public Client updateClient(Long id, Client client) {
+        Client updatedUser = clientRepository.findClientById(id);
 
         updatedUser.setFirstName(client.getFirstName());
         updatedUser.setLastName(client.getLastName());
         updatedUser.setEmail(client.getEmail());
         updatedUser.setPhoneNumber(client.getPhoneNumber());
-        updatedUser.setPassword(passwordEncoder.encode(client.getPassword()));
-        updatedUser.setPassword(client.getPassword());
-        updatedUser.setBlock(client.isBlock());
+        if (Objects.nonNull(client.getPassword())) {
+            updatedUser.setPassword(passwordEncoder.encode(client.getPassword()));
+        }
 
         clientRepository.save(updatedUser);
 
@@ -89,7 +90,7 @@ public class ClientService {
         List<Client> result = new ArrayList<>();
         List<Client> clients = getClients();
         for (Client client : clients) {
-            if (client.getFirstName().contains(search) || client.getLastName().contains(search) || client.getEmail().contains(search) || String.valueOf(client.getId()).contains(search))
+            if (client.getFirstName().contains(search) || client.getLastName().contains(search) || client.getEmail().contains(search))
                 result.add(client);
         }
 
@@ -98,15 +99,24 @@ public class ClientService {
 
     public Client registration(Client client) {
         client.setPassword(passwordEncoder.encode(client.getPassword()));
+        String uuid = UUID.randomUUID().toString();
         Role role_client = roleRepository.findByRoleName("ROLE_CLIENT");
         if (role_client == null)
             throw new ServiceFaultException("Client role not found", HttpStatus.BAD_REQUEST);
         Basket basket = new Basket();
         basket.setClient(client);
         client.setBasket(basket);
+        client.setBlock(true);
+        client.setActivationCode(uuid);
         client.getRoles().add(role_client);
-        basketRepository.save(basket);
         clientRepository.save(client);
+        basketRepository.save(basket);
+
+        emailService.sendEmail(
+                client.getEmail(),
+                "Activation Mail",
+                "Hello, to activate your account, follow this link localhost:8084/activate/" + uuid
+        );
 
         return client;
     }
@@ -118,5 +128,14 @@ public class ClientService {
         }
 
         return false;
+    }
+
+    public void activate(String uuid) {
+        Client client = clientRepository.findByActivationCode(uuid);
+        client.setActivationCode(null);
+        client.setBlock(false);
+
+        clientRepository.save(client);
+
     }
 }

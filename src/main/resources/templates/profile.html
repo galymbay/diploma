@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>User Profile</title>
@@ -10,56 +11,58 @@
 <header class="p-3 mb-3 border-bottom">
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a class="navbar-brand" th:href="@{/clothes}">3JUZ</a>
+            <a class="navbar-brand me-3" th:href="@{/clothes}">3JUZ</a>
+            <img src="logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-3">
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a class="nav-link px-2 link-dark" aria-current="page" th:href="@{/clothes}">Home</a></li>
-                <li><a class="nav-link px-2 link-dark active" th:href="@{/clients}">Users</a></li>
+                <li><a sec:authorize="hasAuthority('ROLE_ADMIN')" class="nav-link px-2 link-dark" th:href="@{/clients}">Users</a>
+                </li>
                 <li><a class="nav-link px-2 link-dark">About Us</a></li>
             </ul>
 
-            <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
-                <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+            <a th:href="@{/basket}" sec:authorize="isAuthenticated()">
+                <button type="button"
+                        class="btn btn-outline-success position-relative me-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                         class="bi bi-cart2"
+                         viewBox="0 0 16 16">
+                        <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+                    </svg>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary"
+                          th:text="${basket.getClothes().size()}">
+                </span>
+                </button>
+            </a>
+
+            <form class=" d-flex col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search" th:action="@{/clothes}"
+                  method="post">
+                <input type="text" class="form-control me-2" name="search" th:value="${search}" placeholder="Search..."
+                       aria-label="Search">
+                <button class="btn btn-outline-secondary" type="submit" value="Search">Search</button>
             </form>
 
+            <a sec:authorize="isAnonymous()" type="button" th:href="@{/login}"
+               class="btn btn-outline-success position-relative me-4">
+                Login
+            </a>
+
             <div class="dropdown text-end">
-                <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                <a th:href="@{/clothes}" sec:authorize="isAuthenticated()"
+                   class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1"
+                   data-bs-toggle="dropdown" th:text="${client.firstName}">
                 </a>
                 <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-                    <li><a class="dropdown-item" href="#">New project...</a></li>
-                    <li><a class="dropdown-item" href="#">Settings</a></li>
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    <li><a class="dropdown-item" th:href="@{/profile}">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" th:href="@{/logout}">Sign out</a></li>
                 </ul>
             </div>
         </div>
     </div>
 </header>
-<nav class="navbar navbar-expand-lg bg-light mb-5">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/clothes">3JUZ</a>
-        <img th:src="@{/logo.png}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
-                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" aria-current="page" th:href="@{/clothes}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" th:href="@{/clients}">Users</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link">About Us</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
 <div class="container">
     <div class="row">
         <div class="col-md-3">
@@ -67,7 +70,6 @@
             <hr>
             <div class="card">
                 <div class="card-header text-center">
-                    <!--                    <img th:src="@{${user.profileImageUrl}}" alt="Profile Picture" class="img-fluid rounded-circle">-->
                     <h5 class="card-title mt-2" th:text="${client.firstName} + ' ' + ${client.lastName}"></h5>
                 </div>
                 <ul class="list-group list-group-flush">
@@ -76,7 +78,6 @@
                     </li>
                     <!--                    <li class="list-group-item"><strong>Address:</strong> <span th:text="${client.address}"></span></li>-->
                     <!--                    <li class="list-group-item"><strong>City:</strong> <span th:text="${client.city}"></span></li>-->
-                    <!--                    <li class="list-group-item"><strong>Country:</strong> <span th:text="${client.country}"></span></li>-->
                     <button type="button" class="btn btn-outline-success container-lg m-auto" data-bs-toggle="modal"
                             data-bs-target="#editProfileModal">
                         Edit
@@ -100,12 +101,14 @@
                                     <div class="form-group">
                                         <label for="name">Name</label>
                                         <input type="text" class="form-control" id="name" name="name"
-                                               th:text="${client.firstName}" th:value="${client.firstName}">
+                                               th:value="${client.firstName}">
+                                        <!--                                               th:text="${client.firstName}">-->
                                     </div>
                                     <div class="form-group">
                                         <label for="email">Email</label>
                                         <input type="email" class="form-control" id="email" name="email"
-                                               th:text="${client.email}" th:value="${client.email}">
+                                               th:value="${client.email}">
+                                        <!--                                               th:text="${client.email}">-->
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save</button>
                                 </form>
@@ -138,46 +141,51 @@
                     </ul>
                 </div>
             </div>
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h5 class="card-title">Basket</h5>
-                </div>
-                <div class="card-body">
-                    <ul class="col mb-3" th:each="clothes : ${client.getBasket().getClothes()}">
-                        <li class="list-inline-item">
+            <!--            <div class="card mt-4">-->
+            <!--                <div class="card-header">-->
+            <!--                    <h5 class="card-title">Basket</h5>-->
+            <!--                </div>-->
+            <!--                <div class="card-body">-->
+            <!--                    <ul class="col mb-3" th:each="clothes : ${client.getBasket().getClothes()}">-->
+            <!--                        <li class="list-inline-item">-->
 
-                            <div class="row row-cols-1 row-cols-md-3 g-4">
-                                <div class="col mb-3">
-                                    <div class="card">
-                                        <img th:src="${clothes.getUrl()}" class="card-img-top img-fluid">
-                                        <div class="card-body">
-                                            <h5 class="card-title" th:text="${clothes.getPrice()} + ' T'"></h5>
-                                            <p class="card-text" th:text="${clothes.getDescription()}"></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <!--                            <div class="row row-cols-1 row-cols-md-3 g-4">-->
+            <!--                                <div class="col mb-3">-->
+            <!--                                    <div class="card">-->
+            <!--                                        <img th:src="${clothes.getUrl()}" class="card-img-top img-fluid">-->
+            <!--                                        <div class="card-body">-->
+            <!--                                            <h5 class="card-title" th:text="${clothes.getPrice()} + ' T'"></h5>-->
+            <!--                                            <p class="card-text" th:text="${clothes.getDescription()}"></p>-->
+            <!--                                        </div>-->
+            <!--                                    </div>-->
+            <!--                                </div>-->
+            <!--                            </div>-->
 
-                        </li>
-                    </ul>
-                </div>
-                <!--                <div class="row row-cols-1 row-cols-md-3 g-4">-->
-                <!--                    <div class="col mb-3" th:each="clothes: ${clothesList}">-->
-                <!--                        <div class="card text-center">-->
-                <!--                            <img th:src="${clothes.getUrl()}" class="card-img-top img-fluid">-->
-                <!--                            <div class="card-body">-->
-                <!--                                <h5 class="card-title" th:text="${clothes.getPrice()} + ' T'"></h5>-->
-                <!--                                <p class="card-text" th:text="${clothes.getDescription()}"></p>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
-                <!--                </div>-->
-            </div>
+            <!--                        </li>-->
+            <!--                    </ul>-->
+            <!--                </div>-->
+            <!--                &lt;!&ndash;                <div class="row row-cols-1 row-cols-md-3 g-4">&ndash;&gt;-->
+            <!--                &lt;!&ndash;                    <div class="col mb-3" th:each="clothes: ${clothesList}">&ndash;&gt;-->
+            <!--                &lt;!&ndash;                        <div class="card text-center">&ndash;&gt;-->
+            <!--                &lt;!&ndash;                            <img th:src="${clothes.getUrl()}" class="card-img-top img-fluid">&ndash;&gt;-->
+            <!--                &lt;!&ndash;                            <div class="card-body">&ndash;&gt;-->
+            <!--                &lt;!&ndash;                                <h5 class="card-title" th:text="${clothes.getPrice()} + ' T'"></h5>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                                <p class="card-text" th:text="${clothes.getDescription()}"></p>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                            </div>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                        </div>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                    </div>&ndash;&gt;-->
+            <!--                &lt;!&ndash;                </div>&ndash;&gt;-->
+            <!--            </div>-->
         </div>
     </div>
 
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
+        integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
+        crossorigin="anonymous"></script>
 <body/>
 <html/>

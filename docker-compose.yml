@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ramazan
+      POSTGRES_PASSWORD: ramazan
+      POSTGRES_DB: diploma
+    ports:
+      - "5432:5432"
+    networks:
+      - mynet
+
+  app:
+    image: galymbay/diploma:0.4
+    container_name: diploma
+    ports:
+      - '8084:8084'
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/diploma
+      SPRING_DATASOURCE_USERNAME: ramazan
+      SPRING_DATASOURCE_PASSWORD: ramazan
+      SPRING_DATASOURCE_DRIVER_CLASS-NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: 3juztestmail@gmail.com
+      SPRING_MAIL_PASSWORD: hfetklfymfkzomam
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_HTML: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLED: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: true
+    restart: always
+    links:
+      - db
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    driver: bridge

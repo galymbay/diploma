@@ -3,12 +3,17 @@ package kz.galymbay.diploma.service;
 //import kz.galymbay.diploma.model.entity.Clothes;
 //import kz.galymbay.diploma.repository.ClothesRepository;
 
+import kz.galymbay.diploma.model.dto.UserPrincipal;
 import kz.galymbay.diploma.model.entity.Clothes;
 //import kz.galymbay.diploma.repository.ClothesRepository;
 import kz.galymbay.diploma.repository.ClothesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,6 +30,7 @@ import java.util.Objects;
 public class ClothesService {
     public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/resources/static/uploads";
     private final ClothesRepository clothesRepository;
+    private final EmailService emailService;
 
     @SneakyThrows
     public Clothes addClothes(Clothes clothes, MultipartFile image) {
@@ -39,6 +44,28 @@ public class ClothesService {
         List<Clothes> clothes = clothesRepository.findAll();
         log.info("Get all clothes from DB: {}", clothes);
         return clothes;
+    }
+
+    public Page<Clothes> getClothesPages(Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+        List<Clothes> clothesList = clothesRepository.findAll();
+
+        if (clothesList.size() < startItem) {
+            clothesList = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, clothesList.size());
+            clothesList = clothesList.subList(startItem, toIndex);
+        }
+
+        Page<Clothes> clothes = new PageImpl<Clothes>(clothesList, PageRequest.of(currentPage, pageSize), clothesList.size());
+
+        return clothes;
+
+//        Page<Clothes> clothes = clothesRepository.findAll(pageable);
+//        log.info("Get all clothes from DB: {}", clothes);
+//        return clothes;
     }
 
     public Clothes updateClothes(Long id, Clothes clothes, MultipartFile image) {
@@ -95,5 +122,20 @@ public class ClothesService {
         Files.write(fileNameAndPath, image.getBytes());
 
         return fileName.toString();
+    }
+
+    public List<Clothes> checkSearch(String search, UserPrincipal userPrincipal) {
+        if (new HashSet<>(List.of("SELECT", "*", "FROM", "DELETE", "DROP", "INSERT", "ALTER")).containsAll(Arrays.stream(search.split(" ")).collect(Collectors.toList()))) {
+            emailService.sendEmail(
+                    "3juztestmail@gmail.com",
+                    "SQL Injection WARN",
+                    "User " + userPrincipal.getClient().getFirstName() + " " + userPrincipal.getClient().getLastName() + "send SQL Injection request" +
+                    "follow this link to block him <a href=\"localhost:8084/clients\">link</a>"
+            );
+        } else if (!search.isEmpty() || !search.isBlank()) {
+            return search(search);
+        }
+
+        return getClothes();
     }
 }

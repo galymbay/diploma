@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -14,7 +16,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+import java.util.Properties;
 
 @Configuration
 @EnableWebSecurity
@@ -34,12 +40,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(
                         "/registration",
-                        "/**/*.css",
-                        "/**/*.jpg",
-                        "/**/*.html",
-                        "/**/*.js",
                         "/login",
-                        "/swagger-ui/#/*"
+                        "/open-api/**",
+                        "/activate/**",
+                        "**/**.png",
+                        "**/**/**.png",
+                        "**.png",
+                        "/clothes"
                 ).permitAll()
                 .antMatchers("/clients").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/clothes/**").hasAuthority("ROLE_ADMIN")
@@ -55,8 +62,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutSuccessUrl("/clothes")
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)
                 .permitAll();
     }
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf()
+//                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                .and()
+//                .headers()
+//                .xssProtection()
+//                .and()
+//                .contentSecurityPolicy("script-src 'self'");
+//        return http.build();
+//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
@@ -76,10 +98,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
-
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
 }
